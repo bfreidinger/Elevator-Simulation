@@ -7,7 +7,6 @@ from collections import deque
 CAPACITY = 15
 TRAVEL_PER_FLOOR = 2
 
-
 class Passenger:
 
     def __init__(self, id, arrival_time, origin, destination):
@@ -83,17 +82,44 @@ class Floor:
         self.queues[passenger.direction].append(passenger)
 
 
+class SimpleElevatorController:
+    
+    def __init__(self,floors,elevators):
+        self.floors = floors
+        self.elevators = elevators
 
-class Controller:
+    def arrived_at_floor
 
-    def __init__(self, num_floors, num_elevators, arrival_lambdas, destination_dist, sim_seed, end_time):
+    def leaving_floor
+
+    def idle
+
+    def floor_call(self, floor):
+        for elevator in elevators:
+            direction = floor - elevator.floor 
+
+            
+
+
+
+class TwoElevatorController:
+    def __init__(self,floors,elevators):
+            self.floors = floors
+            self.elevators = elevators
+
+
+class Simulation:
+
+    def __init__(self, num_floors, num_elevators, arrival_lambdas, destination_dist, controller_type, sim_seed, end_time):
         self.seed = sim_seed
         self.time = 0
         self.end_time = end_time
+        self.controller = controller_type()
         self.floors = [Floor(i) for i in range(num_floors)]
         self.destination_dist = destination_dist
         self.arrival_lambdas = arrival_lambdas
-
+        
+        # set up arrival times and destinations for each arrival
         self.arrivals_by_floor = []
         self.destinations_by_floor = []
         for i in range(num_floors):
@@ -102,13 +128,11 @@ class Controller:
             floor_destination_seed = self.seed + 1000 * i + 500
             self.destinations_by_floor.append(self.generate_destinations(i, floor_destination_seed))
     
-
+        # initialize new elevators
         self.elevator_list = []
         for i in range(num_elevators):
             self.elevator_set.append(Elevator(0))
             
-
-
 
     def generate_arrival(self, lam, end_time, seed):
         rng = np.random.default_rng(seed=seed)
@@ -140,6 +164,31 @@ class Controller:
         for i in range(len(distribution)):
             distribution[i] = distribution[i] / scaling_factor
         return distribution
+
+    def floor_arrival(self, floor, passenger):
+            floor.queues[passenger.direction].add(passenger)
+                
+    
+    def doors_open(self, floor,elevator):
+
+        for p in elevator.passengers:
+            if p.destination == floor.number:
+                p.termination_time = self.time
+                elevator.passengers.remove(p)
+
+        for p in floor.queues[elevator.direction]:
+            if not elevator.at_capacity:
+                p.board_time = self.time
+                elevator.passengers.append(p)
+                floor.queues[elevator.direction].remove(p)
+            else:
+                break
+            
+    def doors_close(self, floor):
+            
+    
+    def floor_reached(self, elevator):
+    
 
 
 
